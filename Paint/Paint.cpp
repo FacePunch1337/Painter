@@ -22,12 +22,14 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];  // the main window class name
 HWND hwndRoundRect;
 bool isLeftHold, isRightHold;
+
 HDC dc;
 HPEN pen;
 int pen_size = 20;
 int red = RGB(255, 0, 0);
 int blue = RGB(0, 0, 255);
 int black = RGB(0, 0, 0);
+int white = RGB(255, 255, 255);
 int current_color;
 
 
@@ -155,7 +157,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         dc = GetDC(hWnd);
 
-        pen = CreatePen(PS_SOLID, 20, RGB(0, 0, 0));
+        pen = CreatePen(PS_SOLID, 20, black);
        
         CreateWindowW(L"Button", L"Red",
             WS_CHILD | WS_VISIBLE | SS_CENTER,
@@ -276,6 +278,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         isLeftHold = false;
         ReleaseCapture();
+        break;
+    }
+
+    case WM_RBUTTONDOWN:
+    {
+        isLeftHold = true;
+       MoveToEx(dc, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), NULL);
+       SetCapture(hWnd);
+
+       LineTo(dc, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+       pen = CreatePen(PS_SOLID, pen_size, white);
+        
+    
+        break;
+    }
+    case WM_RBUTTONUP:
+    {
+        isLeftHold = false;
+        ReleaseCapture();
+        pen = CreatePen(PS_SOLID, pen_size, current_color);
         break;
     }
 
